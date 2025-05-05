@@ -10,11 +10,56 @@ BASE_URL = "https://newsapi.org/v2/everything"  # หรือใช้ Endpoint
 
 # หัวข้อข่าวที่ต้องการค้นหา
 topics = [
-    "alternative construction materials",
+   "alternative construction materials",
+    "sustainable construction materials",
+    "eco friendly building materials",
+    "green building materials",
+    "recycled construction materials",
+    "low carbon construction materials",
+    "biodegradable construction materials",
+    "natural building materials",
+    "energy efficient building materials",
+    "renewable construction resources",
+    "zero waste construction materials",
+    "hempcrete construction",
+    "rammed earth construction",
+    "reclaimed wood building materials",
     "bamboo building",
     "recycled concrete",
-    # เพิ่มหัวข้ออื่นๆ ได้ตามต้องการ
+    "alternative construction methods",
+    "innovative sustainable construction",
+    "circular economy construction materials",
+    "sustainable architecture materials",
+    "earth friendly construction",
+    "carbon neutral building materials",
+    "Government Policies Promoting Alternative Construction Materials",
+    "Laws and Standards for Alternative Construction Materials",
+    "Government Support for Alternative Construction Materials Industry",
+    "Tax Incentives for Sustainable Building Materials",
+    "Green Building Codes and Alternative Materials",
+    "New Technologies in Alternative Construction Material Manufacturing",
+    "Innovation in Efficiency of Alternative Construction Materials",
+    "AI and Machine Learning in Alternative Construction Materials",
+    "Smart Materials for Sustainable Construction",
+    "Digital Technology in Alternative Construction Material Supply Chain",
+    "Alternative Materials and Greenhouse Gas Emission Reduction in Construction",
+    "Renewable Resources in Construction Material Production",
+    "Managing Construction Waste with Alternative Materials",
+    "Environmental Impact of Traditional vs. Alternative Construction Materials",
+    "Environmental Impact Assessments of Buildings with Alternative Materials",
+    "Market Trends in Alternative Construction Materials",
+    "Marketing and Branding of Alternative Construction Materials",
+    "Competition in Alternative Construction Materials Market",
+    "Supply Chains of Alternative Construction Materials",
+    "New Business Models for Alternative Construction Materials",
+    "Alternative Materials for Affordable and Sustainable Housing",
+    "Promoting Skills for Using Alternative Construction Materials in Communities",
+    "Alternative Materials in Environmentally Friendly Public Buildings",
+    "Community Participation in Alternative Construction Material Use",
+    "Cultural Acceptance of Alternative Construction Materials"
 ]
+    # เพิ่มหัวข้ออื่นๆ ได้ตามต้องการ
+
 
 filename = "newsapi_alternative_construction.csv"
 headers = ['title', 'url', 'source_name', 'publishedAt', 'description', 'topic']
