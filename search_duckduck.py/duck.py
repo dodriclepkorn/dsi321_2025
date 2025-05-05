@@ -1,3 +1,5 @@
+pip install duckduckgo-search
+
 from duckduckgo_search import ddg
 
 def search_duckduckgo(query, max_results=5):
