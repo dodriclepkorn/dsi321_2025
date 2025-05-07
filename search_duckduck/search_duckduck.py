@@ -2,10 +2,10 @@ import csv
 from duckduckgo_search import DDGS
 import os
 
-# สร้างอินสแตนซ์ของ DDGS
+
 ddgs = DDGS()
 
-# หัวข้อข่าวที่คุณแนะนำมา (ภาษาอังกฤษ)
+
 suggested_topics = [
     "Life Cycle Assessment of Alternative Construction Materials",
     "Physical and Mechanical Properties of Compressed Earth Blocks",
@@ -29,15 +29,15 @@ suggested_topics = [
     "Collaboration for Development of Alternative Construction Materials"
 ]
 
-# คีย์เวิร์ดหลัก
+
 base_query = "news about "
 
-# สร้างชื่อไฟล์ CSV
+
 filename = "alternative_construction_materials_news.csv"
 file_exists = os.path.isfile(filename)
 existing_links = set()
 
-# อ่านลิงก์ที่มีอยู่แล้วจากไฟล์ (ถ้ามี)
+
 if file_exists:
     with open(filename, mode='r', newline='', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
@@ -52,7 +52,7 @@ with open(filename, mode='a', newline='', encoding='utf-8') as csv_file:
     if not file_exists:
         writer.writeheader()
 
-    # ค้นหาข่าวสำหรับคีย์เวิร์ดหลัก (ถ้าต้องการเก็บไว้)
+    
     main_query_results = ddgs.news(base_query + "alternative construction materials", max_results=100) # ปรับ max_results ได้ตามต้องการ
     for result in main_query_results:
         link = result.get('url')
@@ -66,7 +66,7 @@ with open(filename, mode='a', newline='', encoding='utf-8') as csv_file:
             })
             existing_links.add(link)
 
-    # ค้นหาข่าวสำหรับแต่ละหัวข้อที่แนะนำมา
+    
     for topic in suggested_topics:
         query = base_query + topic
         results = ddgs.news(query, max_results=100) # ปรับ max_results ได้ตามต้องการ
@@ -82,4 +82,4 @@ with open(filename, mode='a', newline='', encoding='utf-8') as csv_file:
                 })
                 existing_links.add(link)
 
-print(f"✅ ดึงข้อมูลข่าวเสร็จสิ้นและบันทึก (ไม่รวมข้อมูลซ้ำ) ในไฟล์: {filename}")
+print(f"ดึงข้อมูลข่าวเสร็จสิ้นและบันทึก  ในไฟล์: {filename}")
