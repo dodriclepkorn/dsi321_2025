@@ -19,6 +19,17 @@ topics = [
     "3D-printed homes",
     "Graphene-enhanced materials",
     "BioMason bricks",
+    "renewable construction resources",
+    "zero waste construction materials",
+    "earth friendly construction",
+    "carbon neutral building materials",
+    "hempcrete construction",
+    "bamboo construction materials",
+    "rammed earth construction",
+    "reclaimed wood building materials",
+    "innovative sustainable construction",
+    "circular economy construction materials",
+    "sustainable architecture materials"
 ]
 
 filename = "newsapi_alternative_construction.csv"
