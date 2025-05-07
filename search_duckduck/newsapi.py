@@ -4,16 +4,24 @@ import csv
 from datetime import datetime
 import os
 
-# แทนที่ด้วย API Key ของคุณ
-API_KEY = "a6d999e2c59444828740a414495a33ad"
-BASE_URL = "https://newsapi.org/v2/everything"  # หรือใช้ Endpoint อื่นๆ เช่น /v2/top-headlines
 
-# หัวข้อข่าวที่ต้องการค้นหา
+API_KEY = "a6d999e2c59444828740a414495a33ad"
+BASE_URL = "https://newsapi.org/v2/everything"  
+
+
 topics = [
     "alternative construction materials",
     "bamboo building",
     "recycled concrete",
-    # เพิ่มหัวข้ออื่นๆ ได้ตามต้องการ
+    "Recycled materials",
+    "Energy-efficient Materials",
+    "Cool roofing materials",
+    "Concrete Alternatives",
+    "Geopolymer concrete",
+    "3D-printed homes",
+    "Graphene-enhanced materials",
+    "BioMason bricks",
+    
 ]
 
 filename = "newsapi_alternative_construction.csv"
@@ -39,10 +47,10 @@ with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
         params = {
             'q': topic,
             'apiKey': API_KEY,
-            'pageSize': 100,  # จำนวนผลลัพธ์ต่อหน้า (สูงสุด 100)
-            'sortBy': 'relevancy', # หรือ 'publishedAt'
-            'language': 'en'      # หรือภาษาอื่นๆ ที่รองรับ
-            # เพิ่ม parameters อื่นๆ ได้ตามต้องการ เช่น 'from', 'to', 'sources', 'domains'
+            'pageSize': 100,  
+            'sortBy': 'relevancy', 
+            'language': 'en'      
+            
         }
 
         try:
@@ -79,4 +87,4 @@ with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
         except json.JSONDecodeError as e:
             print(f"เกิดข้อผิดพลาดในการถอดรหัส JSON สำหรับหัวข้อ '{topic}': {e}")
 
-print(f"✅ ดึงข้อมูลข่าวจาก NewsAPI.org เสร็จสิ้นและบันทึกในไฟล์: {filename}")
+print(f"ดึงข้อมูลข่าวจาก NewsAPI.org เสร็จสิ้นและบันทึกในไฟล์: {filename}")
