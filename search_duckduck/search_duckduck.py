@@ -2,9 +2,7 @@ import csv
 from duckduckgo_search import DDGS
 import os
 
-
 ddgs = DDGS()
-
 
 suggested_topics = [
     "Life Cycle Assessment of Alternative Construction Materials",
@@ -29,57 +27,54 @@ suggested_topics = [
     "Collaboration for Development of Alternative Construction Materials"
 ]
 
-
 base_query = "news about "
-
 
 filename = "alternative_construction_materials_news.csv"
 file_exists = os.path.isfile(filename)
-existing_links = set()
-
+existing_titles = set()
 
 if file_exists:
     with open(filename, mode='r', newline='', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            if 'link' in row and row['link']:
-                existing_links.add(row['link'])
+            if 'headline' in row and row['headline']:
+                existing_titles.add(row['headline'])
 
 with open(filename, mode='a', newline='', encoding='utf-8') as csv_file:
-    fieldnames = ['title', 'link', 'source', 'date', 'topic']
+    fieldnames = ['headline', 'summary', 'source', 'date', 'topic']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
     if not file_exists:
         writer.writeheader()
 
-    
-    main_query_results = ddgs.news(base_query + "alternative construction materials", max_results=100) # ปรับ max_results ได้ตามต้องการ
+    # General query
+    main_query_results = ddgs.news(base_query + "alternative construction materials", max_results=100)
     for result in main_query_results:
-        link = result.get('url')
-        if link and link not in existing_links:
+        headline = result.get('title')
+        if headline and headline not in existing_titles:
             writer.writerow({
-                'title': result.get('title'),
-                'link': link,
-                'source': result.get('source'),
-                'date': result.get('date'),
+                'headline': headline,
+                'summary': result.get('body', ''),  # fallback to empty string if no summary
+                'source': result.get('source', ''),
+                'date': result.get('date', ''),
                 'topic': "General Alternative Construction Materials"
             })
-            existing_links.add(link)
+            existing_titles.add(headline)
 
-    
+    # Specific topic queries
     for topic in suggested_topics:
         query = base_query + topic
-        results = ddgs.news(query, max_results=100) # ปรับ max_results ได้ตามต้องการ
+        results = ddgs.news(query, max_results=100)
         for result in results:
-            link = result.get('url')
-            if link and link not in existing_links:
+            headline = result.get('title')
+            if headline and headline not in existing_titles:
                 writer.writerow({
-                    'title': result.get('title'),
-                    'link': link,
-                    'source': result.get('source'),
-                    'date': result.get('date'),
+                    'headline': headline,
+                    'summary': result.get('body', ''),
+                    'source': result.get('source', ''),
+                    'date': result.get('date', ''),
                     'topic': topic
                 })
-                existing_links.add(link)
+                existing_titles.add(headline)
 
-print(f"ดึงข้อมูลข่าวเสร็จสิ้นและบันทึก  ในไฟล์: {filename}")
+print(f" ดึงข้อมูลข่าวเสร็จสิ้นและบันทึกในไฟล์: {filename}")
