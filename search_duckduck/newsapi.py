@@ -4,10 +4,8 @@ import csv
 from datetime import datetime
 import os
 
-
 API_KEY = "a6d999e2c59444828740a414495a33ad"
-BASE_URL = "https://newsapi.org/v2/everything"  
-
+BASE_URL = "https://newsapi.org/v2/everything"
 
 topics = [
     "alternative construction materials",
@@ -21,36 +19,34 @@ topics = [
     "3D-printed homes",
     "Graphene-enhanced materials",
     "BioMason bricks",
-    
 ]
 
 filename = "newsapi_alternative_construction.csv"
-headers = ['title', 'url', 'source_name', 'publishedAt', 'description', 'topic']
-existing_links = set()
+headers = ['headline', 'summary', 'source', 'date', 'topic']
+existing_titles = set()
 
 # ตรวจสอบไฟล์ CSV ที่มีอยู่เพื่อหลีกเลี่ยงการบันทึกซ้ำ
 try:
     with open(filename, 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            if 'url' in row:
-                existing_links.add(row['url'])
+            if 'headline' in row:
+                existing_titles.add(row['headline'])
 except FileNotFoundError:
     pass
 
 with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=headers)
-    if not existing_links:
+    if not existing_titles:
         writer.writeheader()
 
     for topic in topics:
         params = {
             'q': topic,
             'apiKey': API_KEY,
-            'pageSize': 100,  
-            'sortBy': 'relevancy', 
-            'language': 'en'      
-            
+            'pageSize': 100,
+            'sortBy': 'relevancy',
+            'language': 'en'
         }
 
         try:
@@ -60,25 +56,24 @@ with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
 
             if data['status'] == 'ok' and 'articles' in data:
                 for article in data['articles']:
-                    title = article.get('title')
-                    url = article.get('url')
-                    source_name = article.get('source', {}).get('name')
+                    headline = article.get('title')
+                    summary = article.get('description', '')
+                    source = article.get('source', {}).get('name', '')
                     publishedAt_str = article.get('publishedAt')
-                    description = article.get('description')
-                    publishedAt = None
-                    if publishedAt_str:
-                        publishedAt = datetime.fromisoformat(publishedAt_str.replace('Z', '+00:00'))
+                    date = None
 
-                    if url and url not in existing_links:
+                    if publishedAt_str:
+                        date = datetime.fromisoformat(publishedAt_str.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M:%S')
+
+                    if headline and headline not in existing_titles:
                         writer.writerow({
-                            'title': title,
-                            'url': url,
-                            'source_name': source_name,
-                            'publishedAt': publishedAt.strftime('%Y-%m-%d %H:%M:%S') if publishedAt else None,
-                            'description': description,
+                            'headline': headline,
+                            'summary': summary,
+                            'source': source,
+                            'date': date,
                             'topic': topic
                         })
-                        existing_links.add(url)
+                        existing_titles.add(headline)
             else:
                 print(f"ไม่พบผลลัพธ์สำหรับหัวข้อ: {topic} - {data.get('message')}")
 
@@ -87,4 +82,4 @@ with open(filename, 'a', newline='', encoding='utf-8') as csvfile:
         except json.JSONDecodeError as e:
             print(f"เกิดข้อผิดพลาดในการถอดรหัส JSON สำหรับหัวข้อ '{topic}': {e}")
 
-print(f"ดึงข้อมูลข่าวจาก NewsAPI.org เสร็จสิ้นและบันทึกในไฟล์: {filename}")
+print(f" ดึงข้อมูลข่าวจาก NewsAPI.org เสร็จสิ้นและบันทึกในไฟล์: {filename}")
