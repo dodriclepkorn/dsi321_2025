@@ -1,0 +1,10 @@
+click
+lxml
+primp
+duckduckgo-search
+typing-extensions
+matplotlib
+wordcloud
+pandas
+nltk
+prefect==2.*

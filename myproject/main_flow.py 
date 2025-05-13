@@ -1,0 +1,21 @@
+from prefect import flow, task
+import subprocess
+import logging
+
+@task
+def run_scraping():
+    logging.info("Run scraping.py")
+    subprocess.run(["python", "scraping.py"], check=True)
+
+@task
+def run_cleaning():
+    logging.info("Run clean.py")
+    subprocess.run(["python", "clean.py"], check=True)
+
+@flow(name="News Scraping Daily Flow")
+def scraping_flow():
+    run_scraping()
+    run_cleaning()
+
+if __name__ == "__main__":
+    scraping_flow()
