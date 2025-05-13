@@ -9,39 +9,58 @@ not_relevant_file = "filtered_out_unrelated_news.csv"
 # หัวคอลัมน์
 fieldnames = ['headline', 'summary', 'source', 'date', 'topic']
 
-# รวม keyword สำหรับเช็คความเกี่ยวข้อง
+# รวม keyword ที่ตัดให้สั้นลง สำหรับเช็คความเกี่ยวข้อง
 relevant_keywords = [
-    # จากหัวข้อยาว
-    "life cycle assessment", "compressed earth blocks", "bamboo", "recycled materials",
-    "thermal insulation", "agricultural waste", "bio-based", "3d printing", "energy-efficient buildings",
-    "standards", "regulations", "adoption", "economic impact", "consumer awareness",
-    "production", "enhanced properties", "technologies", "local resources",
-    "circular economy", "collaboration","fungus-based","sustain","paver blocks",
-    
-    # จากหัวข้อสั้น
-    "alternative construction materials", "bamboo building", "recycled concrete",
-    "energy-efficient materials", "cool roofing materials", "concrete alternatives",
-    "geopolymer concrete", "3d-printed homes", "graphene", "biomason bricks",
-    "renewable", "zero waste", "earth friendly", "carbon neutral",
-    "hempcrete", "rammed earth", "reclaimed wood", "sustainable", "sustainable architecture""Graphene-enhanced materials",
-    "BioMason bricks",
-    "renewable construction resources",
-    "zero waste construction materials",
-    "earth friendly construction",
-    "carbon neutral building materials",
-    "hempcrete construction",
-    "bamboo construction materials",
-    "rammed earth construction",
-    "reclaimed wood building materials",
-    "innovative sustainable construction",
-    "circular economy construction materials",
-    "sustainable architecture materials"
+    "LCA",
+    "Earth blocks",
+    "Bamboo",
+    "Recycled",
+    "Insulation",
+    "Agri waste",
+    "Bio-based",
+    "3D printing",
+    "Energy-efficient",
+    "Standards",
+    "Regulations",
+    "Adoption",
+    "Economic impact",
+    "Awareness",
+    "Production",
+    "Enhanced",
+    "Tech",
+    "Local resources",
+    "Circular economy",
+    "Collaboration",
+    "Fungus-based",
+    "Sustain",
+    "Paver blocks",
+    "Alt. materials",
+    "Bamboo build",
+    "Recycled concrete",
+    "Energy materials",
+    "Cool roofing",
+    "Concrete alt.",
+    "Geopolymer",
+    "3D homes",
+    "Graphene",
+    "BioMason",
+    "Renewable",
+    "Zero waste",
+    "Earth-friendly",
+    "Carbon neutral",
+    "Hempcrete",
+    "Rammed earth",
+    "Reclaimed wood",
+    "Sustainable",
+    "Arch. materials",
+    "Circular materials",
+    "Innovative build"
 ]
 
 # ฟังก์ชันตรวจสอบว่าข่าวเกี่ยวข้องหรือไม่
 def is_relevant(text):
     text_lower = text.lower()
-    return any(keyword in text_lower for keyword in relevant_keywords)
+    return any(keyword.lower() in text_lower for keyword in relevant_keywords)
 
 # ใช้ set เพื่อตรวจสอบ headline ซ้ำ
 seen_headlines = set()
@@ -80,4 +99,4 @@ with open(data_file, mode='w', newline='', encoding='utf-8') as outfile, \
 
                     seen_headlines.add(headline)
 
-print(f" รวมและคลีนข้อมูลเรียบร้อย -> ไฟล์ที่เกี่ยวข้อง: {data_file}, ไฟล์ที่ไม่เกี่ยวข้อง: {not_relevant_file}")
+print(f"รวมและคลีนข้อมูลเรียบร้อย -> ไฟล์ที่เกี่ยวข้อง: {data_file}, ไฟล์ที่ไม่เกี่ยวข้อง: {not_relevant_file}")
