@@ -1,0 +1,76 @@
+services:
+  ### Prefect Database
+  database:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prefect
+    expose:
+      - 5432
+    volumes: 
+      - db:/var/lib/postgresql/data
+    profiles: ["server"]
+
+  ### Prefect Server API and UI
+  server:
+    container_name: prefect
+    image: prefecthq/prefect:3-python3.12
+    restart: always
+    volumes:
+      - prefect:/root/.prefect
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "server", "start"]
+    environment:
+      - PREFECT_UI_URL=http://127.0.0.1:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@database:5432/prefect
+    ports:
+      - 4200:4200
+    depends_on:
+      - database
+    profiles: ["server"]
+
+  ## Prefect Worker
+  worker:
+    # image: prefecthq/prefect:3-python3.12
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    restart: always
+    working_dir: "/root/flows"
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "worker", "start", "-p", "scrape-news"]
+    environment:
+      - PREFECT_API_URL=http://server:4200/api
+    profiles: ["worker"]
+    volumes:
+      - "./scrape_2.py:/root/flows/scrape_2.py"
+      - "./config_path.py:/root/flows/config_path.py"
+      - "./requirements.txt:/root/flows/requirements.txt"
+      - "./pyproject.toml:/root/flows/pyproject.toml"
+    
+  ### Prefect CLI
+  cli:
+    # image: prefecthq/prefect:3-python3.12
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    entrypoint: "bash"
+    working_dir: "/root/flows"
+    volumes:
+      - "./scrape.py:/root/flows/scrape.py"
+      - "./scrape_2.py:/root/flows/scrape_2.py"
+      - "./config_path.py:/root/flows/config_path.py"
+      - "./requirements.txt:/root/flows/requirements.txt"
+      - "./pyproject.toml:/root/flows/pyproject.toml"
+    environment:
+      - PREFECT_API_URL=http://server:4200/api
+    profiles: ["cli"]
+      
+volumes:
+  prefect:
+  db:
+networks:
+  default:
+    name: prefect-network
