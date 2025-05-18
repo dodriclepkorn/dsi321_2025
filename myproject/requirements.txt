@@ -1,0 +1,4 @@
+typing_extensions
+prefect==2.13.0
+duckduckgo_search
+griffe>=1.13.0
