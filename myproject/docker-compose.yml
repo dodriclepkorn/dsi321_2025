@@ -1,28 +1,92 @@
 services:
-  prefect-server:
-    image: prefecthq/prefect:2.13-python3.9
-    command: prefect orion start --host 0.0.0.0
+
+  lakefsdb:
+    container_name: lakefs_db
+    image: treeverse/lakefs:1.7.0
     ports:
-      - "4200:4200"      # Orion UI
-    restart: unless-stopped
-
-  prefect-agent:
-    image: prefecthq/prefect:2.13-python3.9
-    depends_on:
-      - prefect-server
-    command: prefect agent start --work-queue default
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./flows:/app/flows
+      - 8001:8000
     environment:
-      PREFECT_API_URL: http://prefect-server:4200/api
-    restart: unless-stopped
-
-  news_scraper:
-    build: .
-    depends_on:
-      - prefect-agent
+      LAKEFS_INSTALLATION_USER_NAME: "admin"
+      LAKEFS_INSTALLATION_ACCESS_KEY_ID: "access_key"
+      LAKEFS_INSTALLATION_SECRET_ACCESS_KEY: "secret_key"
+      LAKEFS_DATABASE_TYPE: "local"
+      LAKEFS_AUTH_ENCRYPT_SECRET_KEY: "wait"
+      LAKEFS_BLOCKSTORE_TYPE: "local"
     volumes:
-      - ./data:/app/data
-    command: ["prefect", "deployment", "run", "news_scraper/scrape_news-deployment"]
-    restart: "no"
+      - ./data/:/home/lakefs/
+
+  ### Prefect Database
+  database:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prefect
+    expose:
+      - 5432
+    volumes: 
+      - db:/var/lib/postgresql/data
+    profiles: ["server"]
+
+  ### Prefect Server API and UI
+  server:
+    container_name: prefect
+    image: prefecthq/prefect:3-python3.12
+    restart: always
+    volumes:
+      - prefect:/root/.prefect
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "server", "start"]
+    environment:
+      - PREFECT_UI_URL=http://127.0.0.1:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@database:5432/prefect
+    ports:
+      - 4200:4200
+    depends_on:
+      - database
+    profiles: ["server"]
+
+  ## Prefect Worker
+  worker:
+    # image: prefecthq/prefect:3-python3.12
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    restart: always
+    working_dir: "/root/flows"
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "worker", "start", "-p", "scrape-news"]
+    environment:
+      - PREFECT_API_URL=http://server:4200/api
+    profiles: ["worker"]
+    volumes:
+      - "./main_2.py:/root/flows/main_2.py"
+      - "./config_path.py:/root/flows/config_path.py"
+      - "./requirements.txt:/root/flows/requirements.txt"
+      - "./pyproject.toml:/root/flows/pyproject.toml"
+    
+  ### Prefect CLI
+  cli:
+    # image: prefecthq/prefect:3-python3.12
+    build:
+      context: .
+      dockerfile: Dockerfile.cli
+    entrypoint: "bash"
+    working_dir: "/root/flows"
+    volumes:
+      - "./main.py:/root/flows/main.py"
+      - "./main_2.py:/root/flows/main_2.py"
+      - "./config_path.py:/root/flows/config_path.py"
+      - "./requirements.txt:/root/flows/requirements.txt"
+      - "./pyproject.toml:/root/flows/pyproject.toml"
+    environment:
+      - PREFECT_API_URL=http://server:4200/api
+    profiles: ["cli"]
+      
+volumes:
+  prefect:
+  db:
+networks:
+  default:
+    name: prefect-network
