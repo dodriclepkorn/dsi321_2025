@@ -17,7 +17,7 @@ RUN pip install --upgrade pip
 RUN pip install prefect==2.13.0 duckduckgo_search typing_extensions
 
 # แสดงเวอร์ชัน prefect เพื่อยืนยันการติดตั้ง
-RUN prefect version
+#RUN prefect version
 
 # ติดตั้ง dependencies อื่น ๆ ถ้ามีใน requirements.txt (ยกเว้น prefect)
 RUN pip install --no-cache-dir -r requirements.txt

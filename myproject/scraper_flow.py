@@ -13,7 +13,7 @@ def scrape_news():
     output_folder = "data"
     os.makedirs(output_folder, exist_ok=True)
 
-    # เพิ่ม timestamp ต่อท้ายชื่อไฟล์ เช่น scraped_news_20250518_153000.csv
+
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(output_folder, f"scraped_news_{timestamp}.csv")
     file_exists = os.path.isfile(filename)
@@ -111,4 +111,13 @@ def scrape_news():
                     })
                     existing_hashes.add(hash_val)
                     count_topic += 1
-            logger.info(f"เพิ่มข่าวจาก '{topic}':
+            logger.info(f"เพิ่มข่าวจาก '{topic}': {count_topic} รายการ")
+
+    logger.info(f"ดึงข้อมูลข่าวเสร็จสิ้นและบันทึกในไฟล์: {filename}")
+
+@flow
+def news_scraping_flow():
+    scrape_news()
+
+if __name__ == "__main__":
+    news_scraping_flow()
