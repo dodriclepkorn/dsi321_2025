@@ -1,1 +1,5 @@
+# Ignore virtual environment folder
 myenv/
+
+# Ignore data lakefs metadata files 
+data/lakefs/metadata/
