@@ -1,92 +1,96 @@
+version: "3.8"
+
 services:
-
-  lakefsdb:
-    container_name: lakefs_db
+  lakefs_db:
     image: treeverse/lakefs:1.7.0
+    container_name: lakefs_db
     ports:
-      - 8001:8000
+      - "8001:8000"
     environment:
-      LAKEFS_INSTALLATION_USER_NAME: "admin"
-      LAKEFS_INSTALLATION_ACCESS_KEY_ID: "access_key"
-      LAKEFS_INSTALLATION_SECRET_ACCESS_KEY: "secret_key"
-      LAKEFS_DATABASE_TYPE: "local"
-      LAKEFS_AUTH_ENCRYPT_SECRET_KEY: "wait"
-      LAKEFS_BLOCKSTORE_TYPE: "local"
+      LAKEFS_INSTALLATION_USER_NAME: admin
+      LAKEFS_INSTALLATION_ACCESS_KEY_ID: access_key
+      LAKEFS_INSTALLATION_SECRET_ACCESS_KEY: secret_key
+      LAKEFS_DATABASE_TYPE: local
+      LAKEFS_AUTH_ENCRYPT_SECRET_KEY: wait
+      LAKEFS_BLOCKSTORE_TYPE: local
     volumes:
-      - ./data/:/home/lakefs/
+      - ./data:/home/lakefs
+    networks:
+      - prefect-network
 
-  ### Prefect Database
   database:
     image: postgres:alpine
-    restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=prefect
-    expose:
-      - 5432
-    volumes: 
-      - db:/var/lib/postgresql/data
-    profiles: ["server"]
-
-  ### Prefect Server API and UI
-  server:
-    container_name: prefect
-    image: prefecthq/prefect:3-python3.12
-    restart: always
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: prefect
     volumes:
-      - prefect:/root/.prefect
+      - db:/var/lib/postgresql/data
+    networks:
+      - prefect-network
+
+  server:
+    image: prefecthq/prefect:3-python3.12
+    container_name: prefect
     entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "server", "start"]
     environment:
-      - PREFECT_UI_URL=http://127.0.0.1:4200/api
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-      - PREFECT_SERVER_API_HOST=0.0.0.0
-      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@database:5432/prefect
+      PREFECT_UI_URL: http://127.0.0.1:4200/api
+      PREFECT_API_URL: http://0.0.0.0:4200/api
+      PREFECT_SERVER_API_HOST: 0.0.0.0
+      PREFECT_API_DATABASE_CONNECTION_URL: postgresql+asyncpg://postgres:postgres@database:5432/prefect
     ports:
-      - 4200:4200
+      - "4200:4200"
     depends_on:
       - database
-    profiles: ["server"]
+    networks:
+      - prefect-network
 
-  ## Prefect Worker
   worker:
-    # image: prefecthq/prefect:3-python3.12
     build:
       context: .
       dockerfile: Dockerfile.cli
-    restart: always
-    working_dir: "/root/flows"
+    container_name: prefect_worker
     entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "worker", "start", "-p", "scrape-news"]
     environment:
-      - PREFECT_API_URL=http://server:4200/api
-    profiles: ["worker"]
+      PREFECT_API_URL: http://server:4200/api
     volumes:
-      - "./main_2.py:/root/flows/main_2.py"
-      - "./config_path.py:/root/flows/config_path.py"
-      - "./requirements.txt:/root/flows/requirements.txt"
-      - "./pyproject.toml:/root/flows/pyproject.toml"
-    
-  ### Prefect CLI
-  cli:
-    # image: prefecthq/prefect:3-python3.12
+      - ./main.py:/root/flows/main.py
+      - ./main_2.py:/root/flows/main_2.py
+      - ./config_path.py:/root/flows/config_path.py
+      - ./requirements.txt:/root/flows/requirements.txt
+      - ./pyproject.toml:/root/flows/pyproject.toml
+    depends_on:
+      - server
+      - lakefs_db
+    networks:
+      - prefect-network
+
+  streamlit:
     build:
       context: .
-      dockerfile: Dockerfile.cli
-    entrypoint: ["tail", "-f", "/dev/null"]
-    working_dir: "/root/flows"
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit_app
+    command: >
+      streamlit run app.py
+      --server.port=8501
+      --server.address=0.0.0.0
     volumes:
-      - "./main.py:/root/flows/main.py"
-      - "./main_2.py:/root/flows/main_2.py"
-      - "./config_path.py:/root/flows/config_path.py"
-      - "./requirements.txt:/root/flows/requirements.txt"
-      - "./pyproject.toml:/root/flows/pyproject.toml"
+      - ./:/app
     environment:
-      - PREFECT_API_URL=http://server:4200/api
-    profiles: ["cli"]
-      
+      LAKEFS_ENDPOINT: http://lakefsdb:8000
+      LAKEFS_ACCESS_KEY: access_key
+      LAKEFS_SECRET_KEY: secret_key
+    ports:
+      - "8501:8501"
+    depends_on:
+      - lakefs_db
+    networks:
+      - prefect-network
+
 volumes:
-  prefect:
   db:
+  prefect:
+
 networks:
-  default:
+  prefect-network:
     name: prefect-network
