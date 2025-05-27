@@ -1,7 +1,7 @@
 
 # DSI321_2025: News Scraper & Word Cloud for Alternative Construction
 
-## 📌 Project Description
+## Project Description
 
 This "News Scraper & Word Cloud for Alternative Construction" project is developed as part of the DSI321 (Data Science and Innovation) / Big Data Infrastructure course for the academic year 2025 at Thammasat University.
 
@@ -9,7 +9,7 @@ It aims to collect news articles related to **alternative construction** using w
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 - **Automated Web Scraping** from online news websites or blogs.
 - **Text Filtering & Cleaning** for relevance and clarity.
@@ -21,7 +21,7 @@ It aims to collect news articles related to **alternative construction** using w
 
 ---
 
-## 🛠 Technologies Used
+## Technologies Used
 
 - **Python**
 - **Requests & BeautifulSoup4** – for scraping
@@ -35,7 +35,7 @@ It aims to collect news articles related to **alternative construction** using w
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 myproject/
@@ -62,28 +62,28 @@ myproject/
 
 ---
 
-## ⚙️ Installation and Running
+## Installation and Running
 
-### ✅ Prerequisites
+### Prerequisites
 
 - **Git**: https://git-scm.com/
 - **Python 3.8+**: https://www.python.org/downloads/
 - **Docker & Docker Compose** (Recommended): https://www.docker.com/products/docker-desktop/
 
-### 📥 Clone the Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/dodriclepkorn/dsi321_2025.git
 cd dsi321_2025
 ```
 
-### 🚀 Run with Docker Compose (Recommended)
+### Run with Docker Compose (Recommended)
 
 ```bash
 docker-compose up --build
 ```
 
-### ⚠️ Manual Setup (Optional)
+### Manual Setup (Optional)
 
 ```bash
 python -m venv venv
@@ -93,7 +93,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🧪 Usage
+## Usage
 
 Once the app is running, open:
 
@@ -107,7 +107,7 @@ Use the dashboard to:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repo: https://github.com/dodriclepkorn/dsi321_2025
 2. Create a feature branch: `git checkout -b feature/my-feature`
@@ -116,7 +116,7 @@ Use the dashboard to:
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 Kanokporn Samathathanyakorn 6524651152 
 GitHub: [dodriclepkorn](https://github.com/dodriclepkorn)
