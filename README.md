@@ -118,7 +118,7 @@ Use the dashboard to:
 
 ## 👩‍💻 Author
 
-Kanokporn Samathathanyakorn 6524651152 – DSI321 Student  
+Kanokporn Samathathanyakorn 6524651152 
 GitHub: [dodriclepkorn](https://github.com/dodriclepkorn)
 
 ---
