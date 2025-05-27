@@ -114,3 +114,4 @@ streamlit==1.45.1
 packaging==24.0
 matplotlib==3.10.3
 prefect==3.4.1
+pandera 

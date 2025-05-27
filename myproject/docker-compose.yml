@@ -72,7 +72,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cli
-    entrypoint: "bash"
+    entrypoint: ["tail", "-f", "/dev/null"]
     working_dir: "/root/flows"
     volumes:
       - "./main.py:/root/flows/main.py"
